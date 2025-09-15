@@ -1,9 +1,10 @@
-using System.Text.Json.Serialization;
-using Microsoft.OpenApi.Models;
 using Application;
 using Domain;
 using Infrastructure;
-using System.IO; // Add this for Path
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,9 +29,14 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "API.xml")); 
 });
 
+// EF Core + PostgreSQL
+var cs = builder.Configuration.GetConnectionString("Default")
+         ?? builder.Configuration["ConnectionStrings:Default"];
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(cs));
+builder.Services.AddScoped<IOrderRepository, EfOrderRepository>();
+
 // DI
 builder.Services.AddSingleton<IBinWidthCalculator, BinWidthCalculator>();
-builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
 builder.Services.AddScoped<CreateOrder>();
 builder.Services.AddScoped<GetOrder>();
 
@@ -41,8 +47,15 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Order Bin Width API v1");
+    c.RoutePrefix = string.Empty;
 });
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
 app.Run();

@@ -5,8 +5,12 @@ public class Order
     public string OrderId { get; }
     public IDictionary<ProductType, int> Items { get; }
     public decimal RequiredBinWidthMm { get; }
-
-    private Order(string orderId,
+   
+    
+    /// <summary>
+    ///  Constructeur public utilisé uniquement par l'infrastructure EF Core
+    /// </summary>
+    public Order(string orderId,
                   IDictionary<ProductType, int> items,
                   decimal requiredWidth)
     {
