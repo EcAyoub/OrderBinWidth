@@ -31,6 +31,16 @@
 - **Business and Technical Validation**: Both at the domain level and via DataAnnotations in the API.
 - **Centralized Error Handling**: Middleware transforms exceptions into consistent HTTP responses.
 
+## Continuous Integration (CI)
+
+This project includes a CI pipeline using **GitHub Actions**.  
+On each push or pull request to `master`, the workflow will:
+
+- Spin up a PostgreSQL database in a container.
+- Restore dependencies, build the project, and run database migrations.
+- Run all unit and integration tests.
+- Upload the test results as artifacts.
+
 ## Docker & Docker Compose
 
 You can run the project using Docker for easy setup and deployment.
