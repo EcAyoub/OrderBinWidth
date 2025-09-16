@@ -34,7 +34,7 @@
 ## Continuous Integration (CI)
 
 This project includes a CI pipeline using **GitHub Actions**.  
-On each push or pull request to `main`, the workflow will:
+On each push or pull request to `master`, the workflow will:
 
 - Spin up a PostgreSQL database in a container.
 - Restore dependencies, build the project, and run database migrations.
