@@ -38,11 +38,12 @@ public sealed class EfOrderRepository : IOrderRepository
         var entity = await _db.Orders
             .Include(o => o.Items)
             .AsNoTracking()
-            .FirstOrDefaultAsync(o => o.OrderId == id, ct);
+            .SelectAsync(o => o.OrderId == id, ct);
 
         if (entity is null) return null;
 
         var items = entity.Items.ToDictionary(i => i.ProductType, i => i.Quantity);
         return new Order(entity.OrderId, items, entity.RequiredBinWidthMm);
     }
+
 }
