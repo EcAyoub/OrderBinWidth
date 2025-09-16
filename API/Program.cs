@@ -39,8 +39,12 @@ builder.Services.AddScoped<IOrderRepository, EfOrderRepository>();
 builder.Services.AddSingleton<IBinWidthCalculator, BinWidthCalculator>();
 builder.Services.AddScoped<CreateOrder>();
 builder.Services.AddScoped<GetOrder>();
+builder.Services.AddTransient<API.Middleware.ErrorHandlingMiddleware>();
 
 var app = builder.Build();
+
+// Middleware
+app.UseMiddleware<API.Middleware.ErrorHandlingMiddleware>();
 
 // Swagger UI
 app.UseSwagger();
