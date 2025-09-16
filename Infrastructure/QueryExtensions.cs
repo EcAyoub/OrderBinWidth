@@ -6,12 +6,16 @@ namespace Infrastructure;
 public static class QueryExtensions
 {
 
-    public static Task<TEntity?> SelectAsync<TEntity>(
-           this IQueryable<TEntity> source,
-           Expression<Func<TEntity, bool>> predicate,
-           CancellationToken ct = default)
-           where TEntity : class
+    public static async Task<TEntity?> SelectAsync<TEntity>(
+      this IQueryable<TEntity> source,
+      Expression<Func<TEntity, bool>> predicate,
+      CancellationToken ct = default)
+      where TEntity : class
     {
-        return source.FirstOrDefaultAsync(predicate, ct);
+        var filtered = source.Where(predicate);
+
+        var list = await filtered.Take(1).ToListAsync(ct);
+
+        return list.Count > 0 ? list[0] : null;
     }
 }
